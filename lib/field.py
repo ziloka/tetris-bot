@@ -156,7 +156,8 @@ class Field(): # pylint: disable=missing-class-docstring
         """
         Given a tetromino and a vector of scoring weights, this method
         calculates the best placement of the tetromino, scoring each placement
-        with the weight vector.
+        with the weight vector and returning a 4-tuple of the best row, column,
+        resulting Field object, and the drop score.
         """
         rotations = [
             tetromino,

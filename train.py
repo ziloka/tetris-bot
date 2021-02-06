@@ -1,16 +1,17 @@
-#!/usr/bin/env python3
-# Author: omgimanerd (Alvin Lin)
-#
-# Executable CLI to run the genetic algorithm.
-# Parameterizable via command line options, invoke with the -h flag.
+"""
+Author: omgimanerd (Alvin Lin)
 
-from lib.field import Field
+Executable CLI to run the genetic algorithm.
+Parameterizable via command line options, invoke with the -h flag.
+"""
+# pylint: disable=missing-function-docstring
+
+import argparse
+import pickle
 
 from lib.genetic_algorithm.population import Population
 from lib.genetic_algorithm.chromosome import Chromosome
 
-import argparse
-import pickle
 
 def main():
     parser = argparse.ArgumentParser(description='Runs genetic algorithm.')

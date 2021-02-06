@@ -1,8 +1,15 @@
-#!/usr/bin/env python3
+"""
+File containing the Population class, which contains a group of Chromosomes
+for training in the genetic algorithm.
+"""
 
 import random
 
 class Population():
+    """
+    Class representing a population of individuals for training in a genetic
+    algorithm.
+    """
 
     def __init__(self, population):
         """
@@ -18,7 +25,7 @@ class Population():
         given number of generations.
         """
         cut = len(self.population) // 2
-        for i in range(generations):
+        for _ in range(generations):
             # Sort the population of chromosomes by their fitness
             population_by_fitness = sorted(
                 self.population, key=lambda gene: gene.get_fitness())
@@ -29,6 +36,7 @@ class Population():
             # Shuffle and cross breed the fittest members.
             random.shuffle(fittest)
             for i in range(0, cut, 2):
+                # Add two children so the population size remains the same.
                 fittest += [fittest[i].cross(fittest[i + 1])]
                 fittest += [fittest[i].cross(fittest[i + 1])]
             self.population = fittest

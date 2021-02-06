@@ -1,16 +1,24 @@
-#!/usr/bin/env python3
+"""
+File containing the Chromosome class, which holds genetic data for determining
+the fitness of a particular Tetromino placement strategy.
+"""
+
+import math
+import random
+
+import numpy as np
 
 from lib.field import Field
 from lib.tetromino import Tetromino
-from lib.genetic_algorithm.population import Population
 
-import math
-import numpy as np
-import random
 
 GENES = 5
 
 class Chromosome():
+    """
+    Class encapsulating a chromosome for holding "genetic data" regarding
+    the fitness of a particular Tetromino placement strategy
+    """
 
     N_SIMULATIONS = 4
     MAX_SIMULATION_LENGTH = 1000
@@ -130,7 +138,6 @@ class Chromosome():
                 tetromino, self.genes)
             if _field_score == math.inf:
                 return length, field_score
-            else:
-                field = _field
-                field_score = _field_score
+            field = _field
+            field_score = _field_score
         return length, field_score
