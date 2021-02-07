@@ -1,6 +1,6 @@
 """
-File containing the Chromosome class, which holds genetic data for determining
-the fitness of a particular Tetromino placement strategy.
+The Chromosome class holds genetic data for determining the fitness of a
+particular Tetromino placement strategy.
 """
 
 import math
@@ -11,14 +11,9 @@ import numpy as np
 from lib.field import Field
 from lib.tetromino import Tetromino
 
-
 GENES = 5
 
-class Chromosome():
-    """
-    Class encapsulating a chromosome for holding "genetic data" regarding
-    the fitness of a particular Tetromino placement strategy
-    """
+class Chromosome(): # pylint: disable=missing-class-docstring
 
     N_SIMULATIONS = 4
     MAX_SIMULATION_LENGTH = 1000
@@ -130,7 +125,7 @@ class Chromosome():
             Tetromino.JTetromino(),
             Tetromino.LTetromino()
         ]
-        field = Field()
+        field = Field.create()
         field_score = -1
         for length in range(self.max_simulation_length):
             tetromino = random.choice(tetrominos)

@@ -5,11 +5,7 @@ for training in the genetic algorithm.
 
 import random
 
-class Population():
-    """
-    Class representing a population of individuals for training in a genetic
-    algorithm.
-    """
+class Population(): # pylint: disable=missing-class-docstring
 
     def __init__(self, population):
         """

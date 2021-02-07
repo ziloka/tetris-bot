@@ -1,8 +1,10 @@
-#!/usr/bin/env python3
+"""
+The Tetromino class encapsulates a Tetris tetromino as a numpy array.
+"""
 
 import numpy as np
 
-class Tetromino():
+class Tetromino(): # pylint: disable=missing-class-docstring
 
     TYPES = [' ', 'I', 'O', 'T', 'S', 'Z', 'J', 'L']
     TYPES_D = {
@@ -20,15 +22,15 @@ class Tetromino():
         self.state = np.array(state, dtype=np.uint8, copy=True)
 
     @staticmethod
-    def ITetromino():
-	    return Tetromino(
+    def ITetromino(): # pylint: disable=invalid-name, missing-function-docstring
+        return Tetromino(
             [
                 [1, 1, 1, 1]
             ]
         )
 
     @staticmethod
-    def OTetromino():
+    def OTetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino(
             [
                 [2, 2],
@@ -37,7 +39,7 @@ class Tetromino():
         )
 
     @staticmethod
-    def TTetromino():
+    def TTetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino(
             [
                 [3, 3, 3],
@@ -46,7 +48,7 @@ class Tetromino():
         )
 
     @staticmethod
-    def STetromino():
+    def STetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino(
             [
                 [0, 4, 4],
@@ -55,7 +57,7 @@ class Tetromino():
         )
 
     @staticmethod
-    def ZTetromino():
+    def ZTetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino(
             [
                 [5, 5, 0],
@@ -64,7 +66,7 @@ class Tetromino():
         )
 
     @staticmethod
-    def JTetromino():
+    def JTetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino(
             [
                 [6, 6, 6],
@@ -73,7 +75,7 @@ class Tetromino():
         )
 
     @staticmethod
-    def LTetromino():
+    def LTetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino(
             [
                 [7, 7, 7],
@@ -83,6 +85,9 @@ class Tetromino():
 
     @staticmethod
     def create(letter):
+        """
+        Creates a Tetromino from the given letter for the tetromino type.
+        """
         if letter.upper() in Tetromino.TYPES[1:]:
             raise ValueError('No Tetromino of type {}'.format(letter))
         return getattr(Tetromino, '{}Tetromino'.format(letter.upper()))()
@@ -94,24 +99,22 @@ class Tetromino():
         return self.state[key]
 
     def copy(self):
+        """
+        Returns a new copy of the given Tetromino.
+        """
         return Tetromino(self.state)
 
-    def flat(self):
-        return self.state.flat
-
-    def width(self):
-        return self.state.shape[1]
-
-    def height(self):
-        return self.state.shape[0]
-
     def rotate(self, change):
+        """
+        Given an integer n from [0, 4), this function performs a 90 * n degree
+        rotation clockwise on this Tetromino.
+        """
         while change < 0:
             change += 4
-        change = (change % 4)
+        change %= 4
         if change == 0:
-            return None
-        elif change == 1:
+            return
+        if change == 1:
             self.rotate_right()
         elif change == 2:
             self.flip()
@@ -119,13 +122,22 @@ class Tetromino():
             self.rotate_left()
 
     def rotate_right(self):
+        """
+        This method rotates this Tetromino 90 degrees clockwise.
+        """
         self.state = np.rot90(self.state, 3)
         return self
 
     def rotate_left(self):
+        """
+        This method rotates this Tetromino 90 degrees counterclockwise.
+        """
         self.state = np.rot90(self.state, 1)
         return self
 
     def flip(self):
+        """
+        This method rotates this Tetromino 180 degrees.
+        """
         self.state = np.rot90(self.state, 2)
         return self

@@ -2,7 +2,6 @@
 The Field class encapsulates a game of Tetris and has logic to place and drop
 tetrominoes within it.
 """
-#!/usr/bin/env python3
 
 import math
 import numpy as np
@@ -15,15 +14,26 @@ class Field(): # pylint: disable=missing-class-docstring
     HEIGHT = 22
     SCORING_ELEMENTS = 6
 
-    def __init__(self, state=None):
+    def __init__(self, state):
         """
-        Initializes a Tetris Field.
-        Rows increase downward and columns increase to the right.
+        Initializes a Tetris Field. Rows increase downward and columns increase
+        to the right in the np array representation. Invoke Field.create()
+        instead.
+        """
+        self.state = state
+
+    @staticmethod
+    def create(state=None):
+        """
+        Factory method to create a Field object, with an optional input state
+        np array parameter. If the input state is not valid, then this method
+        returns None. This does not make a copy of the input state.
         """
         if state is not None:
-            self.state = np.array(state, dtype=np.uint8, copy=True)
-        else:
-            self.state = np.full((Field.HEIGHT, Field.WIDTH), 0, dtype=np.uint8)
+            if state.shape == (Field.HEIGHT, Field.WIDTH):
+                return Field(np.array(state, dtype=np.uint8, copy=True))
+            return None
+        return Field(np.full((Field.HEIGHT, Field.WIDTH), 0, dtype=np.uint8))
 
     def __str__(self):
         """
@@ -88,7 +98,8 @@ class Field(): # pylint: disable=missing-class-docstring
 
     def _line_clear_(self):
         """
-        Checks and removes all filled lines.
+        Checks and removes all filled lines, returning the number of lines
+        cleared.
         """
         non_filled = np.array(
             [not row.all() and row.any() for row in self.state])
