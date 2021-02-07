@@ -4,3 +4,4 @@ __pycache__
 *.ogv
 *.gene
 */.ipynb_checkpoints/*
+*.pyc
