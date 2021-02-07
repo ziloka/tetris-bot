@@ -23,65 +23,51 @@ class Tetromino(): # pylint: disable=missing-class-docstring
 
     @staticmethod
     def ITetromino(): # pylint: disable=invalid-name, missing-function-docstring
-        return Tetromino(
-            [
-                [1, 1, 1, 1]
-            ]
-        )
+        return Tetromino([
+            [1, 1, 1, 1],
+        ])
 
     @staticmethod
     def OTetromino(): # pylint: disable=invalid-name, missing-function-docstring
-        return Tetromino(
-            [
-                [2, 2],
-                [2, 2]
-            ]
-        )
+        return Tetromino([
+            [2, 2],
+            [2, 2],
+        ])
 
     @staticmethod
     def TTetromino(): # pylint: disable=invalid-name, missing-function-docstring
-        return Tetromino(
-            [
-                [3, 3, 3],
-                [0, 3, 0]
-            ]
-        )
+        return Tetromino([
+            [3, 3, 3],
+            [0, 3, 0],
+        ])
 
     @staticmethod
     def STetromino(): # pylint: disable=invalid-name, missing-function-docstring
-        return Tetromino(
-            [
-                [0, 4, 4],
-                [4, 4, 0]
-            ]
-        )
+        return Tetromino([
+            [0, 4, 4],
+            [4, 4, 0],
+        ])
 
     @staticmethod
     def ZTetromino(): # pylint: disable=invalid-name, missing-function-docstring
-        return Tetromino(
-            [
-                [5, 5, 0],
-                [0, 5, 5]
-            ]
-        )
+        return Tetromino([
+            [5, 5, 0],
+            [0, 5, 5],
+        ])
 
     @staticmethod
     def JTetromino(): # pylint: disable=invalid-name, missing-function-docstring
-        return Tetromino(
-            [
-                [6, 6, 6],
-                [0, 0, 6]
-            ]
-        )
+        return Tetromino([
+            [6, 6, 6],
+            [0, 0, 6],
+        ])
 
     @staticmethod
     def LTetromino(): # pylint: disable=invalid-name, missing-function-docstring
-        return Tetromino(
-            [
-                [7, 7, 7],
-                [7, 0, 0]
-            ]
-        )
+        return Tetromino([
+            [7, 7, 7],
+            [7, 0, 0],
+        ])
 
     @staticmethod
     def create(letter):
@@ -123,21 +109,24 @@ class Tetromino(): # pylint: disable=missing-class-docstring
 
     def rotate_right(self):
         """
-        This method rotates this Tetromino 90 degrees clockwise.
+        This method rotates this Tetromino 90 degrees clockwise, returning the
+        Tetromino instance for method chaining.
         """
         self.state = np.rot90(self.state, 3)
         return self
 
     def rotate_left(self):
         """
-        This method rotates this Tetromino 90 degrees counterclockwise.
+        This method rotates this Tetromino 90 degrees counterclockwise,
+        returning the Tetromino instance for method chaining.
         """
         self.state = np.rot90(self.state, 1)
         return self
 
     def flip(self):
         """
-        This method rotates this Tetromino 180 degrees.
+        This method rotates this Tetromino 180 degrees, returning the Tetromino
+        instance for method chaining.
         """
         self.state = np.rot90(self.state, 2)
         return self
