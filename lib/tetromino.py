@@ -90,6 +90,18 @@ class Tetromino(): # pylint: disable=missing-class-docstring
         """
         return Tetromino(self.state)
 
+    def width(self):
+        """
+        Helper method to get the width of the Tetromino.
+        """
+        return self.state.shape[0]
+
+    def height(self):
+        """
+        Helper method to get the height of the Tetromino.
+        """
+        return self.state.shape[1]
+
     def rotate(self, change):
         """
         Given an integer n from [0, 4), this function performs a 90 * n degree

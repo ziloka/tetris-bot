@@ -6,8 +6,6 @@ Unit tests for tetromino.py
 
 import unittest
 
-import numpy as np
-
 from lib.tetromino import Tetromino
 
 class TetrominoAssertions: # pylint: disable=too-few-public-methods, no-self-use
@@ -15,9 +13,12 @@ class TetrominoAssertions: # pylint: disable=too-few-public-methods, no-self-use
         """
         Helper method for asserting that two Tetrominos are equal.
         """
-        assert isinstance(t1, Tetromino) and isinstance(t2, Tetromino)
-        assert t1.state.shape == t2.state.shape
-        assert (t1.state == t2.state).all()
+        if not isinstance(t1, Tetromino):
+            raise AssertionError(f'{t1} is not a Tetromino')
+        if not isinstance(t2, Tetromino):
+            raise AssertionError(f'{t2} is not a Tetromino')
+        if t1.state.shape != t2.state.shape or not (t1.state == t2.state).all():
+            raise AssertionError(f'{t1} != {t2}')
 
 class TestTetromino(unittest.TestCase, TetrominoAssertions):
 
@@ -33,7 +34,11 @@ class TestTetromino(unittest.TestCase, TetrominoAssertions):
             [1],
         ])
         self.assertTetrominosEqual(tetromino, expected1)
+        self.assertEqual(tetromino.width(), 1)
+        self.assertEqual(tetromino.height(), 4)
         self.assertTetrominosEqual(tetromino.rotate_right(), expected2)
+        self.assertEqual(tetromino.width(), 4)
+        self.assertEqual(tetromino.height(), 1)
         self.assertTetrominosEqual(tetromino.rotate_right(), expected1)
         self.assertTetrominosEqual(tetromino.rotate_left(), expected2)
         self.assertTetrominosEqual(tetromino.flip(), expected2)
@@ -156,8 +161,8 @@ class TestTetromino(unittest.TestCase, TetrominoAssertions):
             [7, 7, 7],
         ])
         expected4 = Tetromino([
-            [0, 7],
-            [0, 7],
+            [7, 0],
+            [7, 0],
             [7, 7],
         ])
         self.assertTetrominosEqual(tetromino, expected1)
@@ -168,3 +173,6 @@ class TestTetromino(unittest.TestCase, TetrominoAssertions):
         self.assertTetrominosEqual(tetromino.flip(), expected3)
         self.assertTetrominosEqual(tetromino.rotate_left(), expected2)
         self.assertTetrominosEqual(tetromino.rotate_left(), expected1)
+
+if __name__ == '__main__':
+    unittest.main()
