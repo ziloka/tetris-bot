@@ -94,13 +94,13 @@ class Tetromino(): # pylint: disable=missing-class-docstring
         """
         Helper method to get the width of the Tetromino.
         """
-        return self.state.shape[0]
+        return self.state.shape[1]
 
     def height(self):
         """
         Helper method to get the height of the Tetromino.
         """
-        return self.state.shape[1]
+        return self.state.shape[0]
 
     def rotate(self, change):
         """

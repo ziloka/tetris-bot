@@ -6,6 +6,8 @@ Unit tests for tetromino.py
 
 import unittest
 
+import numpy as np
+
 from lib.tetromino import Tetromino
 
 class TetrominoAssertions: # pylint: disable=too-few-public-methods, no-self-use
@@ -17,11 +19,9 @@ class TetrominoAssertions: # pylint: disable=too-few-public-methods, no-self-use
             raise AssertionError(f'{t1} is not a Tetromino')
         if not isinstance(t2, Tetromino):
             raise AssertionError(f'{t2} is not a Tetromino')
-        if t1.state.shape != t2.state.shape or not (t1.state == t2.state).all():
-            raise AssertionError(f'{t1} != {t2}')
+        np.testing.assert_array_equal(t1.state, t2.state)
 
 class TestTetromino(unittest.TestCase, TetrominoAssertions):
-
     def test_ITetromino(self): # pylint: disable=invalid-name
         tetromino = Tetromino.ITetromino()
         expected1 = Tetromino([
@@ -34,11 +34,11 @@ class TestTetromino(unittest.TestCase, TetrominoAssertions):
             [1],
         ])
         self.assertTetrominosEqual(tetromino, expected1)
-        self.assertEqual(tetromino.width(), 1)
-        self.assertEqual(tetromino.height(), 4)
-        self.assertTetrominosEqual(tetromino.rotate_right(), expected2)
         self.assertEqual(tetromino.width(), 4)
         self.assertEqual(tetromino.height(), 1)
+        self.assertTetrominosEqual(tetromino.rotate_right(), expected2)
+        self.assertEqual(tetromino.width(), 1)
+        self.assertEqual(tetromino.height(), 4)
         self.assertTetrominosEqual(tetromino.rotate_right(), expected1)
         self.assertTetrominosEqual(tetromino.rotate_left(), expected2)
         self.assertTetrominosEqual(tetromino.flip(), expected2)
@@ -49,8 +49,13 @@ class TestTetromino(unittest.TestCase, TetrominoAssertions):
             [2, 2],
             [2, 2],
         ])
+        self.assertTetrominosEqual(tetromino, expected)
         self.assertTetrominosEqual(tetromino.rotate_right(), expected)
+        self.assertEqual(tetromino.width(), 2)
+        self.assertEqual(tetromino.height(), 2)
         self.assertTetrominosEqual(tetromino.rotate_right(), expected)
+        self.assertEqual(tetromino.width(), 2)
+        self.assertEqual(tetromino.height(), 2)
         self.assertTetrominosEqual(tetromino.rotate_left(), expected)
         self.assertTetrominosEqual(tetromino.rotate_left(), expected)
         self.assertTetrominosEqual(tetromino.flip(), expected)
@@ -76,7 +81,11 @@ class TestTetromino(unittest.TestCase, TetrominoAssertions):
             [3, 0],
         ])
         self.assertTetrominosEqual(tetromino, expected1)
+        self.assertEqual(tetromino.width(), 3)
+        self.assertEqual(tetromino.height(), 2)
         self.assertTetrominosEqual(tetromino.rotate_right(), expected2)
+        self.assertEqual(tetromino.width(), 2)
+        self.assertEqual(tetromino.height(), 3)
         self.assertTetrominosEqual(tetromino.rotate_right(), expected3)
         self.assertTetrominosEqual(tetromino.rotate_right(), expected4)
         self.assertTetrominosEqual(tetromino.flip(), expected2)
