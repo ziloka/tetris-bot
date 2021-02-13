@@ -18,56 +18,57 @@ class Tetromino(): # pylint: disable=missing-class-docstring
         'L': 7
     }
 
-    def __init__(self, state):
+    def __init__(self, state, tetromino_type):
         self.state = np.array(state, dtype=np.uint8, copy=True)
+        self.tetromino_type = tetromino_type
 
     @staticmethod
     def ITetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino([
             [1, 1, 1, 1],
-        ])
+        ], Tetromino.TYPES[1])
 
     @staticmethod
     def OTetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino([
             [2, 2],
             [2, 2],
-        ])
+        ], Tetromino.TYPES[2])
 
     @staticmethod
     def TTetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino([
             [3, 3, 3],
             [0, 3, 0],
-        ])
+        ], Tetromino.TYPES[3])
 
     @staticmethod
     def STetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino([
             [0, 4, 4],
             [4, 4, 0],
-        ])
+        ], Tetromino.TYPES[4])
 
     @staticmethod
     def ZTetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino([
             [5, 5, 0],
             [0, 5, 5],
-        ])
+        ], Tetromino.TYPES[5])
 
     @staticmethod
     def JTetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino([
             [6, 6, 6],
             [0, 0, 6],
-        ])
+        ], Tetromino.TYPES[6])
 
     @staticmethod
     def LTetromino(): # pylint: disable=invalid-name, missing-function-docstring
         return Tetromino([
             [7, 7, 7],
             [7, 0, 0],
-        ])
+        ], Tetromino.TYPES[7])
 
     @staticmethod
     def create(letter):
@@ -88,7 +89,7 @@ class Tetromino(): # pylint: disable=missing-class-docstring
         """
         Returns a new copy of the given Tetromino.
         """
-        return Tetromino(self.state)
+        return Tetromino(self.state, self.tetromino_type)
 
     def width(self):
         """
