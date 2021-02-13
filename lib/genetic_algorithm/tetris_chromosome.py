@@ -13,7 +13,6 @@ from lib.field import Field
 from lib.tetris_driver import TetrisDriver, TetrisAction
 from lib.genetic_algorithm.chromosome import Chromosome
 
-
 class TetrisChromosome(Chromosome): # pylint: disable=missing-class-docstring
 
     N_SIMULATIONS = 4

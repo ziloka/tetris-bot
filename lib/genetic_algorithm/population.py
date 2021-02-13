@@ -5,13 +5,17 @@ for training in the genetic algorithm.
 
 import random
 
+from lib.genetic_algorithm.chromosome import Chromosome
+
 class Population(): # pylint: disable=missing-class-docstring
 
     def __init__(self, population):
         """
-        Initializes a Population of individuals/chromosomes.
+        Initializes a Population of chromosomes.
         """
         assert len(population) % 4 == 0
+        for chromosome in self.population:
+            assert isinstance(chromosome, Chromosome)
         self.population = population
         self.generations = 0
 

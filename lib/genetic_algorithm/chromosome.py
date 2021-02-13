@@ -5,9 +5,9 @@ algorithm framework.
 
 import numpy as np
 
-DEFAULT_MUTATION_CHANCE = 0.075
-
 class Chromosome(): # pylint: disable=missing-class-docstring
+
+    DEFAULT_MUTATION_CHANCE = 0.075
 
     @staticmethod
     def random(n_genes):
@@ -59,3 +59,9 @@ class Chromosome(): # pylint: disable=missing-class-docstring
             genes = (genes * np.logical_not(mutated_genes)) + (
                 mutation * mutated_genes)
         return Chromosome(genes, None)
+
+    def recalculate_fitness(self):
+        raise NotImplementedError('Method not implemented!')
+
+    def get_fitness(self):
+        raise NotImplementedError('Method not implemented!')
