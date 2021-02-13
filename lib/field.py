@@ -121,11 +121,12 @@ class Field(): # pylint: disable=missing-class-docstring
         Drops a tetromino in the specified column. The leftmost column of the
         tetromino will be aligned with the specified column.
 
-        Returns the number of lines cleared, if applicable.
+        Returns the number of lines cleared, if applicable, or -1 if this
+        tetromino cannot be dropped in this column.
         """
         assert isinstance(tetromino, Tetromino)
         if (row := self._get_tetromino_drop_row_(tetromino, column)) == -1:
-            return 0
+            return -1
         self._place_tetromino_(tetromino, row, column)
         return self._line_clear_()
 

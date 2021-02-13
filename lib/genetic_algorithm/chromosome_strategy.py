@@ -5,65 +5,102 @@ each position by the Chromosome's internal values (trained by a genetic
 algorithm).
 """
 
+import math
+
+import numpy as np
+
 from lib.field import Field
-from lib.tetromino import Tetromino
+from lib.tetris_driver import TetrisDriver, TetrisAction
 
 N_SIMULATIONS = 4
 MAX_SIMULATION_LENGTH = 1000
-MUTATION_CHANCE = 0.075
 
 class ChromosomeStrategy(): # pylint: disable=missing-class-docstring
 
-    def __init__(self, chromosome):
+    def __init__(self, chromosome, n_simulations=N_SIMULATIONS,
+                 max_simulation_length=MAX_SIMULATION_LENGTH):
         self.chromosome = chromosome
+        self.n_simulations = n_simulations
+        self.max_simulation_length = max_simulation_length
 
-        self.simulations = Chromosome.N_SIMULATIONS
-        self.max_simulation_length = Chromosome.MAX_SIMULATION_LENGTH
-        self.mutation_chance = Chromosome.MUTATION_CHANCE
-
-    def _get_fitness_(self):
+    def _get_field_score(self, field):
         """
-        Helper method to perform a single simulation to evaluate the performance
-        of the chromosome. This will be called multiple times and the overall
+        Given a field, this helper method fetches all the input data points we
+        care about from the field and computes the dot product of that input
+        vector with the underlying Chromosome's genes to score the given field.
+        """
+        heights = field.heights()
+        ediff1d = np.ediff1d(heights)
+        field_values = np.array([
+            field.count_gaps(),            # Gap count
+            np.mean(heights),              # Average height
+            np.std(heights),               # Standard deviation of heights
+            heights.max() - heights.min(), # Max height diff
+            abs(ediff1d).max(),            # Max consecutive height diff
+        ])
+        return np.dot(field_values, self.chromosome.genes)
+
+    def strategy_callback(self, field, tetromino, held_tetromino):
+        """
+        This callback is passed into TetrisDriver in order to play an actual
+        game of Tetris using this class's underlying Chromosome to decide the
+        positioning of the next Tetromino.
+
+        This callback takes the current field, tetromino, and held tetromino and
+        returns a TetrisAction object from TetrisDriver.
+        """
+        candidates = [
+            tetromino,
+            tetromino.copy().rotate_right(),
+            tetromino.copy().flip(),
+            tetromino.copy().rotate_left(),
+        ]
+        if held_tetromino.tetromino_type != tetromino.tetromino_type:
+            candidates += [
+                held_tetromino,
+                held_tetromino.copy().rotate_right(),
+                held_tetromino.copy().flip(),
+                held_tetromino.copy().rotate_left(),
+            ]
+        best_column = None
+        best_tetromino_held = True
+        best_field_score = math.inf
+        for candidate in candidates:
+            for column in range(Field.WIDTH):
+                test_field = field.copy()
+                # Scenario where this is an invalid column to drop into
+                if test_field.drop(candidate, column) < 1:
+                    continue
+                tetromino_held = tetromino.tetromino_type == \
+                    held_tetromino.tetromino_type
+                field_score = self._get_field_score(field)
+                if field_score < best_field_score:
+                    best_column = column
+                    best_tetromino_held = tetromino_held
+                    best_field_score = field_score
+        return TetrisAction(best_column, best_tetromino_held)
+
+    def _calculate_fitness_(self):
+        """
+        Helper method to perform a simulation to evaluate the performance of the
+        chromosome. This will be called multiple times and the overall
         performance of the chromosome is the average of all the runs.
         """
-        tetrominos = [
-            Tetromino.ITetromino(),
-            Tetromino.OTetromino(),
-            Tetromino.TTetromino(),
-            Tetromino.STetromino(),
-            Tetromino.ZTetromino(),
-            Tetromino.JTetromino(),
-            Tetromino.LTetromino()
-        ]
-        field = Field.create()
-        field_score = -1
-        for length in range(self.max_simulation_length):
-            tetromino = random.choice(tetrominos)
-            _, __, _field, _field_score = field.get_optimal_drop(
-                tetromino, self.genes)
-            if _field_score == math.inf:
-                return length, field_score
-            field = _field
-            field_score = _field_score
-        return length, field_score
+        lines_cleared = []
+        for _ in range(self.n_simulations):
+            driver = TetrisDriver.create()
+            for _ in range(self.max_simulation_length):
+                driver.play(self.strategy_callback)
+            lines_cleared.append(driver.lines_cleared)
+        return np.median(lines_cleared)
 
     def get_fitness(self):
         """
-        Returns the fitness of the chromosome. If it is cached, it will fetch
-        the cached fitness value, otherwise it will compute it and return it.
+        Returns the fitness of the chromosome. If it has already been computed,
+        it will fetch the fitness value, otherwise it will compute it and return
+        it.
         """
-        if self.fitness is not None:
-            return self.fitness
-        self.recalculate_fitness()
-        return self.fitness
-
-    def recalculate_fitness(self):
-        """
-        Calculates the fitness values of the chromosome by running a number
-        of Tetris simulations using the chromosome and averaging their
-        performance.
-        """
-        scores = np.array([
-            self._get_fitness_() for _ in range(self.simulations)])
-        self.fitness, self.field_score = np.mean(scores, axis=0)
+        if self.chromosome.fitness is not None:
+            return self.chromosome.fitness
+        self.chromosome.fitness = self._calculate_fitness_()
+        return self.chromosome.fitness

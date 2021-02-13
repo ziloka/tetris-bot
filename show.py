@@ -1,18 +1,20 @@
-#!/usr/bin/env python3
-# Author: omgimanerd (Alvin Lin)
-#
-# Utility script to run a gene against Tetris to simulate and verify its
-# performance.
-# Invoke with the -h flag for help.
+"""
+Author: omgimanerd (Alvin Lin)
 
-from lib.field import Field
-from lib.tetromino import Tetromino
-from lib.genetic_algorithm.chromosome import Chromosome
+Utility script to run a gene against Tetris to simulate and verify its
+performance.
+Invoke with the -h flag for help.
+"""
+# pylint: disable=missing-function-docstring
 
 import argparse
 import pickle
 import random
 import time
+
+from lib.field import Field
+from lib.tetromino import Tetromino
+
 
 FIELDS = [
     'Gap Count:\t\t\t{:0.8f}',
