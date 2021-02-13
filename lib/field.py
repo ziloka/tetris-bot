@@ -1,6 +1,6 @@
 """
-The Field class encapsulates a game of Tetris and has logic to place and drop
-tetrominoes within it.
+The Field class encapsulates the Tetris game field and the logic to place and
+drop tetrominoes within it.
 """
 
 import numpy as np
