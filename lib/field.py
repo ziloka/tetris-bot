@@ -114,7 +114,7 @@ class Field(): # pylint: disable=missing-class-docstring
         """
         Returns a copy of the field.
         """
-        return Field(self.state)
+        return Field(self.state.copy())
 
     def drop(self, tetromino, column):
         """
