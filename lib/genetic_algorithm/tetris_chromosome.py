@@ -18,11 +18,22 @@ class TetrisChromosome(Chromosome): # pylint: disable=missing-class-docstring
     N_SIMULATIONS = 4
     MAX_SIMULATION_LENGTH = 1000
 
-    def __init__(self, chromosome, n_simulations=N_SIMULATIONS,
+    N_FIELDS = 5
+
+    def __init__(self, genes, n_simulations=N_SIMULATIONS,
                  max_simulation_length=MAX_SIMULATION_LENGTH):
-        Chromosome.__init__(self, chromosome, None)
+        Chromosome.__init__(self, genes)
         self.n_simulations = n_simulations
         self.max_simulation_length = max_simulation_length
+        self.recalculate_fitness()
+
+    @staticmethod
+    def random():
+        """
+        Returns a TetrisChromosome with randomly seeded genes.
+        """
+        return TetrisChromosome(np.random.random_sample(
+            TetrisChromosome.N_FIELDS))
 
     def _get_field_score_(self, field):
         """
@@ -39,9 +50,10 @@ class TetrisChromosome(Chromosome): # pylint: disable=missing-class-docstring
             heights.max() - heights.min(), # Max height diff
             abs(ediff1d).max(),            # Max consecutive height diff
         ])
-        return np.dot(field_values, self.genes)
+        assert len(field_values) == TetrisChromosome.N_FIELDS
+        return field_values.dot(self.genes)
 
-    def _strategy_callback_(self, field, tetromino, held_tetromino):
+    def strategy_callback(self, field, tetromino, held_tetromino):
         """
         This callback is passed into TetrisDriver in order to play an actual
         game of Tetris using this class's underlying Chromosome to decide the
@@ -56,7 +68,8 @@ class TetrisChromosome(Chromosome): # pylint: disable=missing-class-docstring
             tetromino.copy().flip(),
             tetromino.copy().rotate_left(),
         ]
-        if held_tetromino.tetromino_type != tetromino.tetromino_type:
+        if held_tetromino is not None and (
+                held_tetromino.tetromino_type != tetromino.tetromino_type):
             candidates += [
                 held_tetromino,
                 held_tetromino.copy().rotate_right(),
@@ -70,15 +83,19 @@ class TetrisChromosome(Chromosome): # pylint: disable=missing-class-docstring
             for column in range(Field.WIDTH):
                 test_field = field.copy()
                 # Scenario where this is an invalid column to drop into
-                if test_field.drop(candidate, column) < 1:
+                if test_field.drop(candidate, column) < 0:
                     continue
-                tetromino_held = tetromino.tetromino_type == \
+                tetromino_held = held_tetromino is not None and \
+                    tetromino.tetromino_type == \
                     held_tetromino.tetromino_type
-                field_score = self._get_field_score_(field)
+                # Here we are minimizing the field score
+                field_score = self._get_field_score_(test_field)
                 if field_score < best_field_score:
                     best_column = column
                     best_tetromino_held = tetromino_held
                     best_field_score = field_score
+        if best_column is None:
+            return None
         return TetrisAction(best_column, best_tetromino_held)
 
     def recalculate_fitness(self):
@@ -91,17 +108,8 @@ class TetrisChromosome(Chromosome): # pylint: disable=missing-class-docstring
         for _ in range(self.n_simulations):
             driver = TetrisDriver.create()
             for _ in range(self.max_simulation_length):
-                driver.play(self._strategy_callback_)
+                if not driver.play(self.strategy_callback):
+                    break
             lines_cleared.append(driver.lines_cleared)
         self.fitness = np.median(lines_cleared)
         return self.fitness
-
-    def get_fitness(self):
-        """
-        Returns the fitness of the chromosome. If it has already been computed,
-        it will fetch the fitness value, otherwise it will compute it and return
-        it.
-        """
-        if self.fitness is not None:
-            return self.fitness
-        return self.recalculate_fitness()

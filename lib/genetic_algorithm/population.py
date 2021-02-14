@@ -9,7 +9,9 @@ from lib.genetic_algorithm.chromosome import Chromosome
 
 class Population(): # pylint: disable=missing-class-docstring
 
-    def __init__(self, population):
+    DEFAULT_MUTATION_CHANCE = 0.075
+
+    def __init__(self, population, mutation_chance=DEFAULT_MUTATION_CHANCE):
         """
         Initializes a Population of chromosomes.
         """
@@ -17,6 +19,7 @@ class Population(): # pylint: disable=missing-class-docstring
         for chromosome in self.population:
             assert isinstance(chromosome, Chromosome)
         self.population = population
+        self.mutation_chance = mutation_chance
         self.generations = 0
 
     def run(self, generations):
@@ -37,8 +40,10 @@ class Population(): # pylint: disable=missing-class-docstring
             random.shuffle(fittest)
             for i in range(0, cut, 2):
                 # Add two children so the population size remains the same.
-                fittest += [fittest[i].cross(fittest[i + 1])]
-                fittest += [fittest[i].cross(fittest[i + 1])]
+                fittest += [fittest[i].cross(
+                    fittest[i + 1], self.mutation_chance)]
+                fittest += [fittest[i].cross(
+                    fittest[i + 1], self.mutation_chance)]
             self.population = fittest
             for chromosome in self.population:
                 chromosome.recalculate_fitness()

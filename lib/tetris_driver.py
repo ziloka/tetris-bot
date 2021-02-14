@@ -38,31 +38,32 @@ class TetrisDriver(): # pylint: disable=missing-class-docstring
         self.lines_cleared = 0
 
     @staticmethod
-    def create(field=Field.create()):
+    def create(field=None):
         """
         Factory method to create a TetrisDriver, taking an optional Field with
         which to initialize the game with.
         """
-        return TetrisDriver(field)
+        return TetrisDriver(Field.create() if field is None else field)
 
     def play(self, strategy):
         """
         Given a strategy callback which takes the current Field, the next
-        Tetromino, and the held Tetromino, and returns a TetrisAction, this
-        method will play the given TetrisAction, returning the updated number
-        of tetrominos placed and the lines cleared after doing so.
+        Tetromino, and the held Tetromino, and returns a TetrisAction or None.
+        This method will play the TetrisAction if provided, or return None if
+        one if the TetrisAction was None, indicating the game is over.
         """
         tetromino = random.choice(TetrisDriver.TETROMINOS)
         action = strategy(self.field, tetromino, self.held_tetromino)
-        if action is not None:
-            lines_cleared = 0
-            if action.use_held:
-                lines_cleared = self.field.drop(
-                    self.held_tetromino, action.column)
-                self.held_tetromino = tetromino
-            else:
-                lines_cleared = self.field.drop(
-                    tetromino, action.column)
-            self.num_placed += 1
-            self.lines_cleared += lines_cleared
-        return self.num_placed, self.lines_cleared
+        if action is None:
+            return False
+        lines_cleared = 0
+        if action.use_held:
+            lines_cleared = self.field.drop(
+                self.held_tetromino, action.column)
+            self.held_tetromino = tetromino
+        else:
+            lines_cleared = self.field.drop(
+                tetromino, action.column)
+        self.num_placed += 1
+        self.lines_cleared += lines_cleared
+        return True

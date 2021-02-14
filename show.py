@@ -9,12 +9,11 @@ Invoke with the -h flag for help.
 
 import argparse
 import pickle
-import random
 import time
 
 from lib.field import Field
-from lib.tetromino import Tetromino
-
+from lib.tetris_driver import TetrisDriver
+from lib.genetic_algorithm.tetris_chromosome import TetrisChromosome
 
 FIELDS = [
     'Gap Count:\t\t\t{:0.8f}',
@@ -24,27 +23,12 @@ FIELDS = [
     'ediff1d sum:\t\t\t{:0.8f}'
 ]
 
-def show(chromosome):
-    tetrominos = [
-        Tetromino.ITetromino(),
-        Tetromino.OTetromino(),
-        Tetromino.TTetromino(),
-        Tetromino.STetromino(),
-        Tetromino.ZTetromino(),
-        Tetromino.JTetromino(),
-        Tetromino.LTetromino()
-    ]
-    field = Field()
-    pieces = 0
-    while True:
-        tetromino = random.choice(tetrominos)
-        _, __, field, ___ = field.get_optimal_drop(tetromino, chromosome.genes)
-        if field == None:
-            break
-        print(field)
-        pieces += 1
+def show(genes):
+    driver = TetrisDriver.create()
+    chromosome = TetrisChromosome(genes)
+    while driver.play(chromosome.strategy_callback):
+        print(driver.field)
         time.sleep(1)
-    print('Performance: {}'.format(pieces))
 
 def main():
     parser = argparse.ArgumentParser(
@@ -64,7 +48,8 @@ def main():
             for i, field in enumerate(FIELDS):
                 print(field.format(genes[i]))
         else:
-            show(chromosome)
+            show(chromosome.genes)
+    # pickle.dump(chromosome.genes, 'result1.gene')
 
 if __name__ == '__main__':
     main()

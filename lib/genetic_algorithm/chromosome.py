@@ -7,20 +7,9 @@ import numpy as np
 
 class Chromosome(): # pylint: disable=missing-class-docstring
 
-    DEFAULT_MUTATION_CHANCE = 0.075
-
-    @staticmethod
-    def random(n_genes):
+    def __init__(self, genes, fitness=1):
         """
-        Returns a randomly initialized array for the genetic values inside
-        a Chromosome. The genetic values are sampled from the open interval from
-        -1 to 1.
-        """
-        return (np.random.random_sample(n_genes) * 2) - 1
-
-    def __init__(self, genes, fitness):
-        """
-        Initializes a Chromosome.
+        Initializes a Chromosome. Every chromosome has a default fitness of 1.
         """
         self.genes = genes
         self.fitness = fitness
@@ -31,7 +20,7 @@ class Chromosome(): # pylint: disable=missing-class-docstring
         """
         return str(self.genes)
 
-    def cross(self, other, mutation_chance=DEFAULT_MUTATION_CHANCE):
+    def cross(self, other, mutation_chance):
         """
         Performs genetic crossing between this chromosome and another
         chromosome, returning a new chromosome.
@@ -46,22 +35,23 @@ class Chromosome(): # pylint: disable=missing-class-docstring
         random number in the open interval from -1 to 1.
         """
         assert isinstance(other, Chromosome)
+        assert len(self.genes) == len(other.genes)
         w_sum = self.fitness + other.fitness
-        genes = (self.genes * self.fitness / w_sum) + (
+        n_genes = len(self.genes)
+        new_genes = (self.genes * self.fitness / w_sum) + (
             other.genes * other.fitness / w_sum)
         # Each gene value has a chance to mutate by becoming a random number.
-        mutated_genes = np.random.random_sample(
-            len(self.genes)) < mutation_chance
+        mutated_genes = np.random.random_sample(n_genes) < mutation_chance
         if np.any(mutated_genes):
-            mutation = Chromosome.random(len(self.genes))
+            mutation = (np.random.random_sample(n_genes) * 2) - 1
             # Compose the original genetic values with the mutated genetic
             # values.
-            genes = (genes * np.logical_not(mutated_genes)) + (
+            new_genes = (new_genes * np.logical_not(mutated_genes)) + (
                 mutation * mutated_genes)
-        return Chromosome(genes, None)
+        return Chromosome(new_genes)
 
-    def recalculate_fitness(self):
+    def recalculate_fitness(self): # pylint: disable=missing-function-docstring
         raise NotImplementedError('Method not implemented!')
 
-    def get_fitness(self):
-        raise NotImplementedError('Method not implemented!')
+    def get_fitness(self): # pylint: disable=missing-function-docstring
+        return self.fitness

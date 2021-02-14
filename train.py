@@ -10,8 +10,7 @@ import argparse
 import pickle
 
 from lib.genetic_algorithm.population import Population
-from lib.genetic_algorithm.chromosome import Chromosome
-
+from lib.genetic_algorithm.tetris_chromosome import TetrisChromosome
 
 def main():
     parser = argparse.ArgumentParser(description='Runs genetic algorithm.')
@@ -22,24 +21,24 @@ def main():
     parser.add_argument('--population_size', type=int, default=16)
 
     parser.add_argument('--n_simulations', type=int,
-                        default=Chromosome.N_SIMULATIONS)
+                        default=TetrisChromosome.N_SIMULATIONS)
     parser.add_argument('--max_simulation_length', type=int,
-                        default=Chromosome.MAX_SIMULATION_LENGTH)
+                        default=TetrisChromosome.MAX_SIMULATION_LENGTH)
     parser.add_argument('--mutation_chance', type=float,
-                        default=Chromosome.MUTATION_CHANCE)
+                        default=Population.DEFAULT_MUTATION_CHANCE)
     args = parser.parse_args()
 
-    genes = Chromosome.random_genes()
+    genes = TetrisChromosome.random()
     if args.seed:
         with args.seed as seed:
             chromosome = pickle.load(seed)
             genes = chromosome.genes
 
-    Chromosome.set_globals(args.n_simulations,
-                           args.max_simulation_length,
-                           args.mutation_chance)
     population = Population([
-        Chromosome(genes) for i in range(args.population_size)])
+        TetrisChromosome(
+            genes, args.n_simulations,
+            args.max_simulation_length) for i in range(args.population_size)
+    ], args.mutation_chance)
     population.run(args.generations)
     fittest = population.get_fittest_member()
 
