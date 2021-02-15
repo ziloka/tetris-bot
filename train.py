@@ -8,6 +8,7 @@ Parameterizable via command line options, invoke with the -h flag.
 
 import argparse
 import pickle
+import random
 
 from lib.genetic_algorithm.population import Population
 from lib.genetic_algorithm.tetris_chromosome import TetrisChromosome
@@ -28,22 +29,26 @@ def main():
                         default=Population.DEFAULT_MUTATION_CHANCE)
     args = parser.parse_args()
 
-    genes = TetrisChromosome.random()
+    random.seed(0)
+
+    chromosomes = []
     if args.seed:
         with args.seed as seed:
-            chromosome = pickle.load(seed)
-            genes = chromosome.genes
+            genes = pickle.load(seed)
+            for _ in range(args.population_size):
+                chromosomes.append(TetrisChromosome.create(
+                    genes, args.n_simulations, args.max_simulation_length))
+    else:
+        for _ in range(args.population_size):
+            chromosomes.append(TetrisChromosome.random(
+                args.n_simulations, args.max_simulation_length))
 
-    population = Population([
-        TetrisChromosome(
-            genes, args.n_simulations,
-            args.max_simulation_length) for i in range(args.population_size)
-    ], args.mutation_chance)
+    population = Population(chromosomes, args.mutation_chance)
     population.run(args.generations)
     fittest = population.get_fittest_member()
 
     with args.outfile as outfile:
-        pickle.dump(fittest, outfile)
+        pickle.dump(fittest.genes, outfile)
         print('Fittest member: {}'.format(fittest))
         print('Result dumped to {}'.format(outfile))
 

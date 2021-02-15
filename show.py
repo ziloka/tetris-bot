@@ -11,7 +11,6 @@ import argparse
 import pickle
 import time
 
-from lib.field import Field
 from lib.tetris_driver import TetrisDriver
 from lib.genetic_algorithm.tetris_chromosome import TetrisChromosome
 
@@ -25,7 +24,7 @@ FIELDS = [
 
 def show(genes):
     driver = TetrisDriver.create()
-    chromosome = TetrisChromosome(genes)
+    chromosome = TetrisChromosome.create(genes)
     while driver.play(chromosome.strategy_callback):
         print(driver.field)
         time.sleep(1)
@@ -49,7 +48,6 @@ def main():
                 print(field.format(genes[i]))
         else:
             show(chromosome.genes)
-    # pickle.dump(chromosome.genes, 'result1.gene')
 
 if __name__ == '__main__':
     main()

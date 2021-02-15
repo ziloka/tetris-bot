@@ -65,5 +65,5 @@ class TetrisDriver(): # pylint: disable=missing-class-docstring
             lines_cleared = self.field.drop(
                 tetromino, action.column)
         self.num_placed += 1
-        self.lines_cleared += lines_cleared
+        self.lines_cleared += lines_cleared if lines_cleared > 0 else 0
         return True

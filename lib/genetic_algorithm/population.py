@@ -16,7 +16,7 @@ class Population(): # pylint: disable=missing-class-docstring
         Initializes a Population of chromosomes.
         """
         assert len(population) % 4 == 0
-        for chromosome in self.population:
+        for chromosome in population:
             assert isinstance(chromosome, Chromosome)
         self.population = population
         self.mutation_chance = mutation_chance

@@ -10,6 +10,7 @@ class Chromosome(): # pylint: disable=missing-class-docstring
     def __init__(self, genes, fitness=1):
         """
         Initializes a Chromosome. Every chromosome has a default fitness of 1.
+        The higher the fitness, the better the Chromosome.
         """
         self.genes = genes
         self.fitness = fitness
@@ -20,10 +21,11 @@ class Chromosome(): # pylint: disable=missing-class-docstring
         """
         return str(self.genes)
 
-    def cross(self, other, mutation_chance):
+    @staticmethod
+    def _cross_(c1, c2, mutation_chance): # pylint: disable=invalid-name
         """
-        Performs genetic crossing between this chromosome and another
-        chromosome, returning a new chromosome.
+        Performs genetic crossing between two given chromosomes, returning the
+        new chromosome's gene sequence.
 
         The genetic values stored in a chromosome are all numeric in the open
         interval from -1 to 1. When we cross two chromosomes, we will take the
@@ -34,12 +36,12 @@ class Chromosome(): # pylint: disable=missing-class-docstring
         genetic value. If one occurs, that genetic value will be set to a new
         random number in the open interval from -1 to 1.
         """
-        assert isinstance(other, Chromosome)
-        assert len(self.genes) == len(other.genes)
-        w_sum = self.fitness + other.fitness
-        n_genes = len(self.genes)
-        new_genes = (self.genes * self.fitness / w_sum) + (
-            other.genes * other.fitness / w_sum)
+        assert isinstance(c1, Chromosome) and isinstance(c2, Chromosome)
+        assert len(c1.genes) == len(c2.genes)
+        w_sum = c1.fitness + c2.fitness
+        n_genes = len(c1.genes)
+        new_genes = (c1.genes * c1.fitness / w_sum) + (
+            c2.genes * c2.fitness / w_sum)
         # Each gene value has a chance to mutate by becoming a random number.
         mutated_genes = np.random.random_sample(n_genes) < mutation_chance
         if np.any(mutated_genes):
@@ -48,7 +50,10 @@ class Chromosome(): # pylint: disable=missing-class-docstring
             # values.
             new_genes = (new_genes * np.logical_not(mutated_genes)) + (
                 mutation * mutated_genes)
-        return Chromosome(new_genes)
+        return new_genes
+
+    def cross(self, other, mutation_chance):
+        raise NotImplementedError('Method not implemented!')
 
     def recalculate_fitness(self): # pylint: disable=missing-function-docstring
         raise NotImplementedError('Method not implemented!')

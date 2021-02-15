@@ -20,20 +20,29 @@ class TetrisChromosome(Chromosome): # pylint: disable=missing-class-docstring
 
     N_FIELDS = 5
 
-    def __init__(self, genes, n_simulations=N_SIMULATIONS,
-                 max_simulation_length=MAX_SIMULATION_LENGTH):
+    def __init__(self, genes, n_simulations, max_simulation_length):
         Chromosome.__init__(self, genes)
         self.n_simulations = n_simulations
         self.max_simulation_length = max_simulation_length
         self.recalculate_fitness()
 
     @staticmethod
-    def random():
+    def create(genes, n_simulations=N_SIMULATIONS,
+               max_simulation_length=MAX_SIMULATION_LENGTH):
+        """
+        Factory method for creating a TetrisChromosome with a given gene
+        ndarray.
+        """
+        return TetrisChromosome(genes, n_simulations, max_simulation_length)
+
+    @staticmethod
+    def random(n_simulations=N_SIMULATIONS,
+               max_simulation_length=MAX_SIMULATION_LENGTH):
         """
         Returns a TetrisChromosome with randomly seeded genes.
         """
         return TetrisChromosome(np.random.random_sample(
-            TetrisChromosome.N_FIELDS))
+            TetrisChromosome.N_FIELDS), n_simulations, max_simulation_length)
 
     def _get_field_score_(self, field):
         """
@@ -98,18 +107,31 @@ class TetrisChromosome(Chromosome): # pylint: disable=missing-class-docstring
             return None
         return TetrisAction(best_column, best_tetromino_held)
 
+    def cross(self, other, mutation_chance):
+        """
+        Performs genetic crossing between two TetrisChromosomes using the
+        underlying Chromosome.cross() implementation.
+        """
+        return TetrisChromosome(
+            Chromosome._cross_(self, other, mutation_chance),
+            self.n_simulations,
+            self.max_simulation_length)
+
     def recalculate_fitness(self):
         """
         Performs a simulation to evaluate the fitness of the chromosome. This
         will be called multiple times and the overall performance of the
-        chromosome is the average of all the runs.
+        chromosome is the median of all the runs.
+
+        For a TetrisChromosome, the fitness of the chromosome is the number of
+        Tetrominos it can place before losing plus the number of lines cleared.
         """
-        lines_cleared = []
+        fitnesses = []
         for _ in range(self.n_simulations):
             driver = TetrisDriver.create()
-            for _ in range(self.max_simulation_length):
+            for sim_length in range(self.max_simulation_length):
                 if not driver.play(self.strategy_callback):
                     break
-            lines_cleared.append(driver.lines_cleared)
-        self.fitness = np.median(lines_cleared)
+            fitnesses.append(sim_length + driver.lines_cleared)
+        self.fitness = np.median(fitnesses)
         return self.fitness
