@@ -18,30 +18,30 @@ class TestChromosome(unittest.TestCase):
 
     def test_cross_no_mutation(self): # pylint: disable=no-self-use
         # Test equally weighted chromosomes.
-        # pylint: disable=invalid-name
+        # pylint: disable=invalid-name, protected-access
         c1 = Chromosome(np.array([2, 3, 2]), 0.5)
         c2 = Chromosome(np.array([3, 3, 5]), 0.5)
-        result = c1.cross(c2, mutation_chance=0)
-        np.testing.assert_almost_equal(result.genes, [2.5, 3, 3.5])
+        result = Chromosome._cross_(c1, c2, mutation_chance=0)
+        np.testing.assert_almost_equal(result, [2.5, 3, 3.5])
 
         # Test chromosomes with different fitnesses.
         c1 = Chromosome(np.array([1, 1, 1]), 0.2)
         c2 = Chromosome(np.array([3, 2, 5]), 0.8)
-        result = c1.cross(c2, mutation_chance=0)
-        np.testing.assert_almost_equal(result.genes, [2.6, 1.8, 4.2])
+        result = Chromosome._cross_(c1, c2, mutation_chance=0)
+        np.testing.assert_almost_equal(result, [2.6, 1.8, 4.2])
 
         c1 = Chromosome(np.array([-2, -0.5, 1]), 0.4)
         c2 = Chromosome(np.array([4, 2, 0.25]), 0.6)
-        result = c1.cross(c2, mutation_chance=0)
-        np.testing.assert_almost_equal(result.genes, [1.6, 1, 0.55])
+        result = Chromosome._cross_(c1, c2, mutation_chance=0)
+        np.testing.assert_almost_equal(result, [1.6, 1, 0.55])
 
     def test_cross_with_mutation(self): # pylint: disable=no-self-use
         np.random.seed(0)
-        # pylint: disable=invalid-name
+        # pylint: disable=invalid-name, protected-access
         c1 = Chromosome(np.array([2, 3, 2]), 0.25)
         c2 = Chromosome(np.array([3, 3, 4]), 0.75)
-        result = c1.cross(c2, mutation_chance=0.7)
-        np.testing.assert_almost_equal(result.genes, [0.08976, 3, 0.29178],
+        result = Chromosome._cross_(c1, c2, mutation_chance=0.7)
+        np.testing.assert_almost_equal(result, [0.08976, 3, 0.29178],
                                        decimal=5)
 
 if __name__ == '__main__':
