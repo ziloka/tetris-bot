@@ -33,7 +33,8 @@ class Population(): # pylint: disable=missing-class-docstring
             population_by_fitness = sorted(
                 self.population, key=lambda gene: gene.get_fitness())
             print('Generation: {}'.format(self.generations))
-            print([member.get_fitness() for member in population_by_fitness])
+            for member in population_by_fitness:
+                print(member)
             # Select the top half of the fittest members.
             fittest = population_by_fitness[cut:]
             # Shuffle and cross breed the fittest members.

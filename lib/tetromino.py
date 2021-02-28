@@ -143,3 +143,9 @@ class Tetromino(): # pylint: disable=missing-class-docstring
         """
         self.state = np.rot90(self.state, 2)
         return self
+
+    def type(self):
+        """
+        Utility method for less typing.
+        """
+        return self.tetromino_type

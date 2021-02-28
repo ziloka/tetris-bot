@@ -10,14 +10,14 @@ from lib.tetromino import Tetromino
 class TetrisAction(): # pylint: disable=too-few-public-methods
     """
     A data class encapsulating actions that a player can take on a TetrisDriver,
-    such as the column to place a tetromino and whether or not to use the held
-    tetromino.
+    such as the column to place a tetromino and the Tetromino in its desired
+    orientation.
     """
-    def __init__(self, column, use_held):
-        assert isinstance(column, int) and isinstance(use_held, bool)
+    def __init__(self, tetromino, column):
+        assert isinstance(tetromino, Tetromino) and isinstance(column, int)
         assert 0 <= column < Field.HEIGHT
+        self.tetromino = tetromino
         self.column = column
-        self.use_held = use_held
 
 class TetrisDriver(): # pylint: disable=missing-class-docstring
 
@@ -56,14 +56,10 @@ class TetrisDriver(): # pylint: disable=missing-class-docstring
         action = strategy(self.field, tetromino, self.held_tetromino)
         if action is None:
             return False
-        lines_cleared = 0
-        if action.use_held:
-            lines_cleared = self.field.drop(
-                self.held_tetromino, action.column)
-            self.held_tetromino = tetromino
-        else:
-            lines_cleared = self.field.drop(
-                tetromino, action.column)
+        valid_tetromino_types = [tetromino.type()] if self.held_tetromino is \
+            None else [tetromino.type(), self.held_tetromino.type()]
+        assert action.tetromino.tetromino_type in valid_tetromino_types
+        lines_cleared = self.field.drop(action.tetromino, action.column)
         self.num_placed += 1
         self.lines_cleared += lines_cleared if lines_cleared > 0 else 0
         return True

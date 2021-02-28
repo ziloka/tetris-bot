@@ -69,7 +69,7 @@ class TetrisChromosome(Chromosome): # pylint: disable=missing-class-docstring
         positioning of the next Tetromino.
 
         This callback takes the current field, tetromino, and held tetromino and
-        returns a TetrisAction object from TetrisDriver.
+        calculates the best tetromino (and orientation) position to play.
         """
         candidates = [
             tetromino,
@@ -86,7 +86,7 @@ class TetrisChromosome(Chromosome): # pylint: disable=missing-class-docstring
                 held_tetromino.copy().rotate_left(),
             ]
         best_column = None
-        best_tetromino_held = True
+        best_tetromino_orientation = None
         best_field_score = math.inf
         for candidate in candidates:
             for column in range(Field.WIDTH):
@@ -94,18 +94,16 @@ class TetrisChromosome(Chromosome): # pylint: disable=missing-class-docstring
                 # Scenario where this is an invalid column to drop into
                 if test_field.drop(candidate, column) < 0:
                     continue
-                tetromino_held = held_tetromino is not None and \
-                    tetromino.tetromino_type == \
-                    held_tetromino.tetromino_type
-                # Here we are minimizing the field score
+                # Get the field score and with this chromosome's genetic values
+                # applied to it and try to minimize it.
                 field_score = self._get_field_score_(test_field)
                 if field_score < best_field_score:
                     best_column = column
-                    best_tetromino_held = tetromino_held
+                    best_tetromino_orientation = candidate
                     best_field_score = field_score
         if best_column is None:
             return None
-        return TetrisAction(best_column, best_tetromino_held)
+        return TetrisAction(best_tetromino_orientation, best_column)
 
     def cross(self, other, mutation_chance):
         """

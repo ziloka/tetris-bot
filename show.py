@@ -27,7 +27,7 @@ def show(genes):
     chromosome = TetrisChromosome.create(genes)
     while driver.play(chromosome.strategy_callback):
         print(driver.field)
-        time.sleep(1)
+        time.sleep(0.25)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -41,13 +41,12 @@ def main():
 
     args = parser.parse_args()
     with args.gene as gene:
-        chromosome = pickle.load(gene)
+        genes = pickle.load(gene)
         if args.no_sim:
-            genes = chromosome.genes
             for i, field in enumerate(FIELDS):
                 print(field.format(genes[i]))
         else:
-            show(chromosome.genes)
+            show(genes)
 
 if __name__ == '__main__':
     main()

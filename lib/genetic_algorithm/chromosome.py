@@ -19,7 +19,7 @@ class Chromosome(): # pylint: disable=missing-class-docstring
         """
         Returns a string representation of the chromosome's genes.
         """
-        return str(self.genes)
+        return f'Fitness: {self.fitness} \t Genes: {str(self.genes)}'
 
     @staticmethod
     def _cross_(c1, c2, mutation_chance): # pylint: disable=invalid-name
@@ -53,6 +53,7 @@ class Chromosome(): # pylint: disable=missing-class-docstring
         return new_genes
 
     def cross(self, other, mutation_chance):
+        # pylint: disable=missing-function-docstring
         raise NotImplementedError('Method not implemented!')
 
     def recalculate_fitness(self): # pylint: disable=missing-function-docstring
