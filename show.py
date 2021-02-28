@@ -27,7 +27,9 @@ def show(genes):
     chromosome = TetrisChromosome.create(genes)
     while driver.play(chromosome.strategy_callback):
         print(driver.field)
-        time.sleep(0.25)
+        time.sleep(0.1)
+    print(f'Number of tetrominos placed: {driver.num_placed}')
+    print(f'Number of lines cleared: {driver.lines_cleared}')
 
 def main():
     parser = argparse.ArgumentParser(
